@@ -28,7 +28,7 @@ def camera_ready(cam):
 #     Camera('spill-open',       raw_videos['spill-open']),
 #     Camera('near-spill',       raw_videos['near-spill']),
 # ]
-cameras = [Camera('thermal-cam', 1)]
+cameras = [Camera('thermal-cam', 0)]
 # cameras = [Camera(key, raw_videos[key]) for key in raw_videos]
 
 streamer = Streamer()
