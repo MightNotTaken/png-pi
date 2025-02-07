@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from util import Camera, Streamer
-from assets import raw_videos
+# from assets import raw_videos
 from time import sleep
 
 
