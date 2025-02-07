@@ -151,7 +151,8 @@ class Camera:
                 try:
                     self.latest_frame = self.acquire()
                     if self.display_running:
-                        cv2.imshow(self.name, self.get_formatted_frame())
+                        pass
+                        # cv2.imshow(self.name, self.get_formatted_frame())
                     if self.capture:
                         instant = round(time() * 1000)
                         if instant > self.next_capture:
@@ -164,7 +165,7 @@ class Camera:
                         self.stop_display()
 
                     elif key == ord('s'):
-                        cv2.imwrite(self.name + '-ref.jpg', self.get_formatted_frame())
+                        # cv2.imwrite(self.name + '-ref.jpg', self.get_formatted_frame())
                         print(self.name + '-ref.jpg saved')
                 except Exception as e:
                     if self.completed:
@@ -180,7 +181,8 @@ class Camera:
             self.stop()
             self.release()
             try:
-                cv2.destroyWindow(self.name)
+                pass
+                # cv2.destroyWindow(self.name)
             except:
                 pass
             if self.released_callback:
@@ -271,4 +273,4 @@ if __name__ == '__main__':
             cam.stop_display()
             cam.stop()
             cam.release()
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
