@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from util import Camera, Streamer
-# from assets import raw_videos
+from assets import raw_videos
 from time import sleep
 
 
@@ -20,15 +20,15 @@ def camera_ready(cam):
     streamer.add_cam(cam)
 
 # cameras = [Camera('raw-video', raw_videos['bottom-sealing'])]
-# cameras = [
-#     Camera('raw-video',        raw_videos['with-liquid']),
-#     Camera('heater-off',       raw_videos['heater-off']),
-#     Camera('leakage',          raw_videos['leakage']),
-#     Camera('left-most-leak',   raw_videos['left-most-leak']),
-#     Camera('spill-open',       raw_videos['spill-open']),
-#     Camera('near-spill',       raw_videos['near-spill']),
-# ]
-cameras = [Camera('thermal-cam', 0)]
+cameras = [
+    Camera('raw-video',        raw_videos['with-liquid']),
+    Camera('heater-off',       raw_videos['heater-off']),
+    Camera('leakage',          raw_videos['leakage']),
+    Camera('left-most-leak',   raw_videos['left-most-leak']),
+    Camera('spill-open',       raw_videos['spill-open']),
+    Camera('near-spill',       raw_videos['near-spill']),
+]
+# cameras = [Camera('thermal-cam', 0)]
 # cameras = [Camera(key, raw_videos[key]) for key in raw_videos]
 
 streamer = Streamer()
