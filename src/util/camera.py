@@ -117,7 +117,6 @@ class Camera:
             self.acquired_callback(self)
             
         return frame
-    #this is a random change
 
     def release(self):
         if self.cam:
