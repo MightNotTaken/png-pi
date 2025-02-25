@@ -136,12 +136,13 @@ class Camera:
         instant = str(round(time() * 10))
         for frame in self.frames:
             try:
-                file_name = os.path.join(self.leakage_path, instant + '-' + str(frame['sachet']) + '.png')
-                roi = main_frame[frame['top']:frame['bottom'], frame['left']:frame['right']]
-                if not frame['leakage']:
-                    file_name = os.path.join(self.non_leakage_path, instant + '-' + str(frame['sachet']) + '.png')
-                print('writing image')
-                cv2.imwrite(file_name, roi)            
+                if frame["capture"]:
+                    file_name = os.path.join(self.leakage_path, instant + '-' + str(frame['sachet']) + '.png')
+                    roi = main_frame[frame['top']:frame['bottom'], frame['left']:frame['right']]
+                    if not frame['leakage']:
+                        file_name = os.path.join(self.non_leakage_path, instant + '-' + str(frame['sachet']) + '.png')
+                    print('writing image')
+                    cv2.imwrite(file_name, roi)            
             except Exception as e:
                 print(e)
     def _capture_frames(self):

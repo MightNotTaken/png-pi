@@ -21,7 +21,7 @@ def camera_ready(cam):
 
 # cameras = [Camera('raw-video', raw_videos['bottom-sealing'])]
 cameras = [
-    Camera('raw-video',        raw_videos['with-liquid']),
+    Camera('raw-video',        'https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4'),
     Camera('heater-off',       raw_videos['heater-off']),
     Camera('leakage',          raw_videos['leakage']),
     Camera('left-most-leak',   raw_videos['left-most-leak']),
