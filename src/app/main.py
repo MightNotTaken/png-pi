@@ -45,7 +45,8 @@ plc = PLCData(plc_ip, plc_tags)
 #     Camera('spill-open',       raw_videos['spill-open']),
 #     Camera('near-spill',       raw_videos['near-spill']),
 # ]
-cameras = [Camera('thermal-cam', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
+# cameras = [Camera('thermal-cam', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
+cameras = [Camera('thermal-cam', 0, plc)]
 # cameras = [Camera(key, raw_videos[key]) for key in raw_videos]
 
 streamer = Streamer()
