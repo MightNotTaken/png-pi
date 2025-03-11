@@ -17,8 +17,8 @@ class PLCData:
                 
                 tag_name = tag["tag_name"]  # Extract tag name
                 response = self.plc.Read(tag_name)  # Read value from PLC
-                [tag, temp, status] = str(response).split(' ')
-                self.tag_values[str(tag["key"])] = temp  # Store the value
+                [tg, temp, status] = str(response).split(' ')
+                self.tag_values[tag["key"]] = temp  # Store the value
         except Exception as e:
             print('error in updating', e)
         
