@@ -151,6 +151,9 @@ class Camera:
             self.thread.start()
 
     def save_target_frames(self):
+        print(self.get_reference_temperature())
+        return
+        
         main_frame = self.get_latest_frame()
         instant = str(round(time() * 1000))
         directory_path = os.path.join(self.path, self.directory)
@@ -206,7 +209,7 @@ class Camera:
             tags = self.plc.get_tags()
         else:
             tags = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
-        print(tags)
+        return tags.json()
 
     def normalize(self):
         
@@ -284,7 +287,8 @@ class Camera:
                                 pass
                             self.recording = False
                     if self.recording:
-                        self.writer.write(self.latest_frame)
+                        pass
+                        # self.writer.write(self.latest_frame)
 
                     key = cv2.waitKey(1) & 0xFF
 
