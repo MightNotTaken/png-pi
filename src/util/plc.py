@@ -24,7 +24,6 @@ class PLCData:
         
             
     def get_tags(self):
-        print(self.tag_values)
         return self.tag_values  # Return the latest tag values
     
 
@@ -46,7 +45,7 @@ if __name__ == "__main__":
         {"src": "heater", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
         {"src": "heater", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
         {"src": "heater", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
-        {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"}
+        {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"},
     ]
 
 

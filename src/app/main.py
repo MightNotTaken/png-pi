@@ -23,6 +23,7 @@ plc_tags = [
     {"heater": "", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
     {"heater": "", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
     {"heater": "", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
+    {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"},
 ]
 
 def release_video_source(cam):
