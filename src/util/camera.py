@@ -209,7 +209,7 @@ class Camera:
             tags = self.plc.get_tags()
         else:
             response = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
-            print(response.json())
+            print(response.text)
         return tags
 
     def normalize(self):

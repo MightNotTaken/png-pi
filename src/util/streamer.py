@@ -64,6 +64,7 @@ class Streamer:
         def get_plc_data(camera_name):
             try:
                 cam = self.cams[camera_name]
+                
                 if cam.plc:
                     cam.plc.update()
                     return cam.plc.get_tags(), 200

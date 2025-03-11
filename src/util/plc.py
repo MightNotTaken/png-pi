@@ -12,13 +12,19 @@ class PLCData:
         print(self.plc.Read("FROM_MACHINE_4C_PLC[0]"))
 
     def update(self):
-        for tag in self.tags:
-            tag_name = tag["tag_name"]  # Extract tag name
-            response = self.plc.Read(tag_name)  # Read value from PLC
-            [tag, temp, status] = str(response).split(' ')
-            self.tag_values[tag["key"]] = temp  # Store the value
+        try:
+            for tag in self.tags:
+                
+                tag_name = tag["tag_name"]  # Extract tag name
+                response = self.plc.Read(tag_name)  # Read value from PLC
+                [tag, temp, status] = str(response).split(' ')
+                self.tag_values[str(tag["key"])] = temp  # Store the value
+        except Exception as e:
+            print('error in updating', e)
+        
             
     def get_tags(self):
+        print(self.tag_values)
         return self.tag_values  # Return the latest tag values
     
 
@@ -26,20 +32,21 @@ class PLCData:
 if __name__ == "__main__":
     ip = "192.168.11.1"
     tags = [
-        {"heater": "13", "key": "13", "tag_name": "FROM_MACHINE_4C_PLC[43]"},
-        {"heater": "12", "key": "12", "tag_name": "FROM_MACHINE_4C_PLC[42]"},
-        {"heater": "11", "key": "11", "tag_name": "FROM_MACHINE_4C_PLC[41]"},
-        {"heater": "10", "key": "10", "tag_name": "FROM_MACHINE_4C_PLC[39]"},
-        {"heater": "9",  "key": "9", "tag_name": "FROM_MACHINE_4C_PLC[38]"},
-        {"heater": "8",  "key": "8", "tag_name": "FROM_MACHINE_4C_PLC[37]"},
-        {"heater": "7",  "key": "7", "tag_name": "FROM_MACHINE_4C_PLC[36]"},
-        {"heater": "", "key": "26", "tag_name": "FROM_MACHINE_4C_PLC[56]"},
-        {"heater": "", "key": "25", "tag_name": "FROM_MACHINE_4C_PLC[55]"},
-        {"heater": "", "key": "24", "tag_name": "FROM_MACHINE_4C_PLC[54]"},
-        {"heater": "", "key": "23", "tag_name": "FROM_MACHINE_4C_PLC[53]"},
-        {"heater": "", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
-        {"heater": "", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
-        {"heater": "", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
+        {"src": "heater", "key": "13", "tag_name": "FROM_MACHINE_4C_PLC[43]"},
+        {"src": "heater", "key": "12", "tag_name": "FROM_MACHINE_4C_PLC[42]"},
+        {"src": "heater", "key": "11", "tag_name": "FROM_MACHINE_4C_PLC[41]"},
+        {"src": "heater", "key": "10", "tag_name": "FROM_MACHINE_4C_PLC[39]"},
+        {"src": "heater",  "key": "9", "tag_name": "FROM_MACHINE_4C_PLC[38]"},
+        {"src": "heater",  "key": "8", "tag_name": "FROM_MACHINE_4C_PLC[37]"},
+        {"src": "heater",  "key": "7", "tag_name": "FROM_MACHINE_4C_PLC[36]"},
+        {"src": "heater", "key": "26", "tag_name": "FROM_MACHINE_4C_PLC[56]"},
+        {"src": "heater", "key": "25", "tag_name": "FROM_MACHINE_4C_PLC[55]"},
+        {"src": "heater", "key": "24", "tag_name": "FROM_MACHINE_4C_PLC[54]"},
+        {"src": "heater", "key": "23", "tag_name": "FROM_MACHINE_4C_PLC[53]"},
+        {"src": "heater", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
+        {"src": "heater", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
+        {"src": "heater", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
+        {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"}
     ]
 
 
