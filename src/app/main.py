@@ -32,7 +32,7 @@ def release_video_source(cam):
 def camera_ready(cam):
     print(cam.source)
     print(cam.name, 'acquired')
-    cam.display()
+    # cam.display()
     streamer.add_cam(cam)
     
 plc = PLCData(plc_ip, plc_tags)
