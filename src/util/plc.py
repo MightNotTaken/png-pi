@@ -16,7 +16,7 @@ class PLCData:
             tag_name = tag["tag_name"]  # Extract tag name
             response = self.plc.Read(tag_name)  # Read value from PLC
             [tag, temp, status] = str(response).split(' ')
-            self.tag_values[tag_name] = temp  # Store the value
+            self.tag_values[tag["key"]] = temp  # Store the value
             
     def get_tags(self):
         return self.tag_values  # Return the latest tag values

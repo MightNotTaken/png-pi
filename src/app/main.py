@@ -36,7 +36,7 @@ def camera_ready(cam):
     streamer.add_cam(cam)
     
 plc = PLCData(plc_ip, plc_tags)
-cameras = [Camera('thermal-cam', 0, plc)]
+# cameras = [Camera('thermal-cam', 0, plc)]
 # cameras = [
 #     Camera('raw-video',        'https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4'),
 #     Camera('heater-off',       raw_videos['heater-off']),
@@ -45,7 +45,7 @@ cameras = [Camera('thermal-cam', 0, plc)]
 #     Camera('spill-open',       raw_videos['spill-open']),
 #     Camera('near-spill',       raw_videos['near-spill']),
 # ]
-# cameras = [Camera('thermal-cam', 'http://192.168.93.89:5000/video_feed/thermal-cam/no-format')]
+cameras = [Camera('thermal-cam', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
 # cameras = [Camera(key, raw_videos[key]) for key in raw_videos]
 
 streamer = Streamer()
@@ -57,6 +57,8 @@ for cam in cameras:
 try:
     streamer.start()
     while True:
+        for cam in cameras:
+            cam.get_reference_temperature()
         sleep(1)
 except Exception as e:
     print(e)

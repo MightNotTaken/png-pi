@@ -1,3 +1,4 @@
+import requests
 import os
 import cv2
 import numpy as np
@@ -13,8 +14,8 @@ class SourceType(Enum):
     VIDEO_FILE     = 1
     ACTUAL_CAMERA  = 2
 
-# BASE_PATH = "C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data"
-BASE_PATH = "."
+BASE_PATH = "C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data"
+# BASE_PATH = "."
 
 class Camera:
     def __init__(self, name, source, plc):
@@ -199,6 +200,13 @@ class Camera:
             self.frames = [] 
             print(e)
 
+    def get_reference_temperature(self):
+        tags = None
+        if self.plc:
+            tags = self.plc.get_tags()
+        else:
+            tags = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
+        print(tags)
 
     def normalize(self):
         
@@ -211,9 +219,6 @@ class Camera:
         # Apply threshold while keeping 3 channels intact
         mask = self.latest_frame > threshold  # Mask of bright pixels
         self.latest_frame = np.where(mask, self.latest_frame, 0)  # Set dark pixels to 0
-
-
-        averages = [] 
 
         for sachet_id, sachet in self.sachets.items():
             if sachet_id == "length":  
@@ -228,7 +233,7 @@ class Camera:
                 avg_pixel_value = 0  # If no bright pixels, default to 0
             with self.data_read_lock:
                 self.temp_ranges[sachet_id].update(avg_pixel_value)
-            # avg_pixel_value = np.mean(sachet_region)
+                
             
     def get_sachet_temperature(self):
         with self.data_read_lock:
