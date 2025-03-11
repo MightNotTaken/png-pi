@@ -1,0 +1,19 @@
+sudo nmcli connection modify eth0-static ipv4.addresses 192.168.93.47/24
+sudo nmcli connection modify eth0-static ipv4.gateway 192.168.93.1
+sudo nmcli connection modify eth0-static ipv4.dns "8.8.8.8 8.8.4.4"
+sudo nmcli connection modify eth0-static ipv4.method manual
+
+sudo nmcli connection down eth0-static && sudo nmcli connection up eth0-static
+
+
+sudo apt update
+sudo apt install cmake g++ libopencv-dev libusb-1.0-0-dev libjpeg-dev
+
+git clone https://github.com/maartenvds/libseek-thermal.git
+cd libseek-thermal
+mkdir build && cd build
+cmake ..
+make -j$(nproc)
+sudo make install
+
+lsusb | grep Seek
