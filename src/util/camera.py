@@ -9,12 +9,20 @@ from .frame import Frame
 import json
 from datetime import datetime
 from .MA import MovingAverage
+import platform
+
 
 class SourceType(Enum):
     VIDEO_FILE     = 1
     ACTUAL_CAMERA  = 2
 
-BASE_PATH = "C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data"
+
+BASE_PATH = None
+if platform.system() == "Windows":
+    BASE_PATH = "C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data"
+else:
+    BASE_PATH = "/home/png/pro/png-pi/png-pi"
+    
 # BASE_PATH = "."
 
 class Camera:
@@ -42,6 +50,7 @@ class Camera:
         self.temperature = 0
         self.directory = None
         self.sachets = {}
+        self.sachets_temperature = {}
         self.path = os.path.join(BASE_PATH, self.name)
         self.temp_ranges = {}
 
@@ -150,10 +159,7 @@ class Camera:
             self.thread = threading.Thread(target=self._capture_frames, daemon=True)
             self.thread.start()
 
-    def save_target_frames(self):
-        print(self.get_reference_temperature())
-        return
-        
+    def save_target_frames(self):        
         main_frame = self.get_latest_frame()
         instant = str(round(time() * 1000))
         directory_path = os.path.join(self.path, self.directory)
@@ -203,22 +209,22 @@ class Camera:
             self.frames = [] 
             print(e)
 
-    def get_reference_temperature(self):
+    def update_reference_temperature(self):
         tags = None
         if self.plc:
             tags = self.plc.get_tags()
         else:
             response = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
-            print(response.text)
+            tags = json.loads(response.text)
+        self.sachets_temperature = tags
         return tags
 
-    def normalize(self):
-        
+    def normalize(self):        
         if self.latest_frame is None:
             print("No frame available.")
             return
 
-        threshold = 80
+        threshold = 100
 
         # Apply threshold while keeping 3 channels intact
         mask = self.latest_frame > threshold  # Mask of bright pixels

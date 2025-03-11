@@ -1,6 +1,7 @@
 import sys
 import os
 import platform
+import threading
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -9,20 +10,20 @@ from time import sleep
 
 plc_ip = "192.168.11.1"
 plc_tags = [
-    {"heater": "13", "key": "13", "tag_name": "FROM_MACHINE_4C_PLC[43]"},
-    {"heater": "12", "key": "12", "tag_name": "FROM_MACHINE_4C_PLC[42]"},
-    {"heater": "11", "key": "11", "tag_name": "FROM_MACHINE_4C_PLC[41]"},
-    {"heater": "10", "key": "10", "tag_name": "FROM_MACHINE_4C_PLC[39]"},
-    {"heater": "9",  "key": "9", "tag_name": "FROM_MACHINE_4C_PLC[38]"},
-    {"heater": "8",  "key": "8", "tag_name": "FROM_MACHINE_4C_PLC[37]"},
-    {"heater": "7",  "key": "7", "tag_name": "FROM_MACHINE_4C_PLC[36]"},
-    {"heater": "", "key": "26", "tag_name": "FROM_MACHINE_4C_PLC[56]"},
-    {"heater": "", "key": "25", "tag_name": "FROM_MACHINE_4C_PLC[55]"},
-    {"heater": "", "key": "24", "tag_name": "FROM_MACHINE_4C_PLC[54]"},
-    {"heater": "", "key": "23", "tag_name": "FROM_MACHINE_4C_PLC[53]"},
-    {"heater": "", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
-    {"heater": "", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
-    {"heater": "", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
+    {"src": "heater", "key": "13", "tag_name": "FROM_MACHINE_4C_PLC[43]"},
+    {"src": "heater", "key": "12", "tag_name": "FROM_MACHINE_4C_PLC[42]"},
+    {"src": "heater", "key": "11", "tag_name": "FROM_MACHINE_4C_PLC[41]"},
+    {"src": "heater", "key": "10", "tag_name": "FROM_MACHINE_4C_PLC[39]"},
+    {"src": "heater",  "key": "9", "tag_name": "FROM_MACHINE_4C_PLC[38]"},
+    {"src": "heater",  "key": "8", "tag_name": "FROM_MACHINE_4C_PLC[37]"},
+    {"src": "heater",  "key": "7", "tag_name": "FROM_MACHINE_4C_PLC[36]"},
+    {"src": "heater", "key": "26", "tag_name": "FROM_MACHINE_4C_PLC[56]"},
+    {"src": "heater", "key": "25", "tag_name": "FROM_MACHINE_4C_PLC[55]"},
+    {"src": "heater", "key": "24", "tag_name": "FROM_MACHINE_4C_PLC[54]"},
+    {"src": "heater", "key": "23", "tag_name": "FROM_MACHINE_4C_PLC[53]"},
+    {"src": "heater", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
+    {"src": "heater", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
+    {"src": "heater", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
     {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"},
 ]
 
@@ -34,7 +35,8 @@ def release_video_source(cam):
 def camera_ready(cam):
     print(cam.source)
     print(cam.name, 'acquired')
-    # cam.display()
+    if platform.system() == "Windows":
+        cam.display()
     streamer.add_cam(cam)
     
 plc = PLCData(plc_ip, plc_tags)
@@ -59,12 +61,20 @@ for cam in cameras:
     cam.on_acquire(camera_ready)
     cam.on_release(release_video_source)
 
-try:
-    streamer.start()
+def monitor_cameras():
     while True:
-        for cam in cameras:
-            cam.get_reference_temperature()
-        sleep(1)
+        try:
+            for cam in cameras:
+                cam.update_reference_temperature()
+            sleep(5)
+        except Exception as e:
+            print(f"Camera monitoring error: {e}")
+try:
+    monitor_thread = threading.Thread(target=monitor_cameras, daemon=True)
+    monitor_thread.start()
+    
+    streamer.start()
+        
 except Exception as e:
     print(e)
     print('closing routines')
