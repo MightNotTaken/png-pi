@@ -208,8 +208,9 @@ class Camera:
         if self.plc:
             tags = self.plc.get_tags()
         else:
-            tags = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
-        return tags.json()
+            response = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
+            print(response.json())
+        return tags
 
     def normalize(self):
         

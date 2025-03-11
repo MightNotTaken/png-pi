@@ -66,7 +66,7 @@ class Streamer:
                 cam = self.cams[camera_name]
                 if cam.plc:
                     cam.plc.update()
-                    return jsonify(cam.plc.get_tags())
+                    return cam.plc.get_tags(), 200
             except Exception as e:
                 print(e)       
             return jsonify([])
