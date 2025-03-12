@@ -281,7 +281,10 @@ class Camera:
             while self.running:
                 try:
                     self.latest_frame = self.acquire()
-                    self.normalize()
+                    try:
+                        self.normalize()
+                    except Exception as e:
+                        print(e)
                     if self.display_running:
                         cv2.imshow(self.name, self.get_formatted_frame())
                         pass
