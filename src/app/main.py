@@ -50,6 +50,7 @@ plc = PLCData(plc_ip, plc_tags)
 #     Camera('near-spill',       raw_videos['near-spill']),
 # ]
 if platform.system() == "Windows":
+    # cameras = [Camera('thermal-cam', 'C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data\\thermal-cam\\paper-shift\\video\\1740634614649.mp4', None)]
     cameras = [Camera('thermal-cam', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
 else:  # For Raspberry Pi (Linux)
     cameras = [Camera('thermal-cam', 0, plc)]
@@ -66,7 +67,8 @@ def monitor_cameras():
         try:
             for cam in cameras:
                 cam.update_reference_temperature()
-            sleep(5)
+                
+            sleep(.5)
         except Exception as e:
             print(f"Camera monitoring error: {e}")
 try:

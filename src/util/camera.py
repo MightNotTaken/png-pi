@@ -27,6 +27,7 @@ else:
 
 class Camera:
     def __init__(self, name, source, plc):
+        self.iterations = 0
         self.plc = plc
         self.name = name
         self.source = source
@@ -224,8 +225,11 @@ class Camera:
             print("No frame available.")
             return
 
-        threshold = 100
-
+        threshold = 120
+        averages = []
+        temp_value = 0
+        sachet_temp = 0
+        ratio = 1
         # Apply threshold while keeping 3 channels intact
         mask = self.latest_frame > threshold  # Mask of bright pixels
         self.latest_frame = np.where(mask, self.latest_frame, 0)  # Set dark pixels to 0
@@ -242,8 +246,25 @@ class Camera:
             else:
                 avg_pixel_value = 0  # If no bright pixels, default to 0
             with self.data_read_lock:
-                self.temp_ranges[sachet_id].update(avg_pixel_value)
-                
+                averages.append(f'{sachet_id} -> {self.temp_ranges[sachet_id].update(avg_pixel_value):.2f} : {self.sachets_temperature[str(sachet_id)]}')
+            temp_value = int(self.temp_ranges[sachet_id].update(avg_pixel_value))
+            sachet_temp = int(self.sachets_temperature[str(sachet_id)])
+            if abs(sachet_temp - 128) < 2:
+                ratio = sachet_temp / temp_value
+        if ratio == 1:
+            temp_value = int(self.temp_ranges['13'].update(avg_pixel_value))
+            sachet_temp = int(self.sachets_temperature[str('13')])
+            ratio = sachet_temp / temp_value
+        # Apply the ratio only once after looping through sachets
+        self.latest_frame = (self.latest_frame * ratio).astype(np.uint8)
+
+        self.iterations += 1
+        if self.iterations == 20:
+            print(f'ratio: {ratio:.2f}')
+            print('\n'.join(averages))
+            print('\n')
+            self.iterations = 0
+
             
     def get_sachet_temperature(self):
         with self.data_read_lock:

@@ -56,6 +56,7 @@ if __name__ == "__main__":
         sleep(1)
         # Update values from PLC
         plc_data.update()
+        
 
         # Prepare data for tabular display
         table_data = []
