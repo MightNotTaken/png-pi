@@ -251,13 +251,13 @@ class Camera:
             sachet_temp = int(self.sachets_temperature[str(sachet_id)])
             if abs(sachet_temp - 128) < 2:
                 ratio = sachet_temp / temp_value
-        if ratio == 1:
-            try:
-                temp_value = int(self.temp_ranges['13'].update(avg_pixel_value))
-                sachet_temp = int(self.sachets_temperature[str('13')])
-                ratio = sachet_temp / temp_value
-            except Exception as e:
-                pass
+        # if ratio == 1:
+        #     try:
+        #         temp_value = int(self.temp_ranges['13'].update(avg_pixel_value))
+        #         sachet_temp = int(self.sachets_temperature[str('13')])
+        #         ratio = sachet_temp / temp_value
+        #     except Exception as e:
+        #         pass
         # Apply the ratio only once after looping through sachets
         self.latest_frame = (self.latest_frame * ratio).astype(np.uint8)
 
