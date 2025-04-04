@@ -5,7 +5,7 @@ import threading
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from util import Camera, Streamer, PLCData
+from util import Camera, Streamer, PLCData, HorizontalCamera
 from time import sleep
 
 plc_ip = "192.168.11.1"
@@ -24,7 +24,10 @@ plc_tags = [
     {"src": "heater", "key": "22", "tag_name": "FROM_MACHINE_4C_PLC[52]"},
     {"src": "heater", "key": "21", "tag_name": "FROM_MACHINE_4C_PLC[51]"},
     {"src": "heater", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
-    {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"},
+    {"src": "heater", "key": "14", "tag_name": "FROM_MACHINE_4C_PLC[57]"},
+    {"src": "heater", "key": "15", "tag_name": "FROM_MACHINE_4C_PLC[57]"},
+    {"src": "heater", "key": "16", "tag_name": "FROM_MACHINE_4C_PLC[57]"},
+    {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[40].5"},
 ]
 
 def release_video_source(cam):
@@ -37,6 +40,7 @@ def camera_ready(cam):
     print(cam.name, 'acquired')
     if platform.system() == "Windows":
         cam.display()
+    cam.update_reference_temperature()
     streamer.add_cam(cam)
     
 plc = PLCData(plc_ip, plc_tags)
@@ -50,10 +54,11 @@ plc = PLCData(plc_ip, plc_tags)
 #     Camera('near-spill',       raw_videos['near-spill']),
 # ]
 if platform.system() == "Windows":
-    # cameras = [Camera('thermal-cam', 'C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data\\thermal-cam\\paper-shift\\video\\1740634614649.mp4', None)]
-    cameras = [Camera('thermal-cam', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
+    cameras = [Camera('thermal-cam', 'C:\\Users\\Tahir\\OneDrive\\Desktop\\camera\\high-temperature.mp4', None)]
+    # cameras = [Camera('thermal-cam-horizontal', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
 else:  # For Raspberry Pi (Linux)
-    cameras = [Camera('thermal-cam', 0, plc)]
+    # cameras = [Camera('thermal-cam', 0, plc)]
+    cameras = [HorizontalCamera('thermal-cam-horizontal', 0, plc)]
 # cameras = [Camera(key, raw_videos[key]) for key in raw_videos]
 
 streamer = Streamer()
@@ -67,8 +72,7 @@ def monitor_cameras():
         try:
             for cam in cameras:
                 cam.update_reference_temperature()
-                
-            sleep(.5)
+            sleep(2)
         except Exception as e:
             print(f"Camera monitoring error: {e}")
 try:

@@ -83,7 +83,6 @@ class Streamer:
                 ref_cam.frames = frames
                 ref_cam.save_frames()
                 ref_cam.update_sachets()
-                ref_cam.fps = cam['fps']
                 ref_cam.capture = True
                 ref_cam.directory = data['folder']
                 ref_cam.temperature = data['temperature']
@@ -121,5 +120,24 @@ class Streamer:
                     return Response('Camera not found', mimetype='text/plain')
             except Exception as e:
                 return jsonify({'name': name, 'status': 'not found'}), 400
+            
+          
+        @app.route('/latest-frame/<string:name>')
+        def latest_frame(name):
+            """Route to serve the latest frame as a JPEG image."""
+            try:
+                print('name', name)
+                cam = self.get_camera(name)
+                if not cam:
+                    return jsonify({'error': 'Camera not found'}), 404
+                frame = cam.get_latest_frame()
+                if frame is not None:
+                    ret, buffer = cv2.imencode('.jpg', frame)
+                    if ret:
+                        return Response(buffer.tobytes(), mimetype='image/jpeg')
+                return jsonify({'error': 'No frame available'}), 500
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+
         app.run(host='0.0.0.0', port=5000, threaded=True)
         return app

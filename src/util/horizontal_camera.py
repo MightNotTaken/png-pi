@@ -25,7 +25,7 @@ else:
     
 # BASE_PATH = "."
 
-class Camera:
+class HorizontalCamera:
     def __init__(self, name, source, plc):
         self.iterations = 0
         self.plc = plc
@@ -237,14 +237,9 @@ class Camera:
             tags = self.plc.get_tags()
             # print(tags)
         else:
-            tags = {
-                '0': 128,'1': 128,'2': 128,'3': 128,'4': 128,'5': 128,'6': 128,'7': 128,'8': 128,
-                '9': 128,'10': 128,'11': 128,'12': 128,'13': 128,'14': 128,'15': 128,'16': 128,'17': 128,"motor": 1
-            }
-            # response = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
-            # tags = json.loads(response.text)
+            response = requests.get('http://raspberrypi.local:5000/get-plc-data/' + self.name)
+            tags = json.loads(response.text)
         self.sachets_temperature = tags
-        print(tags["motor"])
         return tags
     
     
@@ -266,20 +261,10 @@ class Camera:
         self.impression_cycle["start"] = round(time() * 1000)
         self.impression_cycle["active"] = True
         self.impression_cycle["spt"] = None
-        # self.frame_to_serve = self.impression_cycle["frame"]
-        
-        if hasattr(self, "frame_to_serve") and self.frame_to_serve is not None:
-            # Compute the average of the previous frame_to_serve and the new frame
-            self.frame_to_serve = cv2.addWeighted(self.frame_to_serve, 0.3, self.impression_cycle["frame"], 0.7, 0)
-        else:
-            # If frame_to_serve is not initialized, set it to the new frame
-            self.frame_to_serve = self.impression_cycle["frame"]
     
     def update_impression(self, latest_frame, sachet_pixel_temperature):
-        [sachet_id, pixel, temperature] = min(sachet_pixel_temperature, key=lambda x: abs(x[2] - 125))
-        self.ratio = temperature / pixel
         self.latest_frame = (self.latest_frame * self.ratio).astype(np.uint8)
-        
+        self.frame_to_serve = self.latest_frame
         if not self.impression_cycle["spt"]:
             self.impression_cycle["spt"] = sachet_pixel_temperature
         previous_mean_pixel = np.mean([entry[1] for entry in self.impression_cycle["spt"]])
@@ -297,15 +282,14 @@ class Camera:
         if self.latest_frame is None:
             print("No frame available.")
             return
-        
-        threshold = 100
+        threshold = 80
         averages = []
         temp_value = 0
         sachet_temp = 0
         self.ratio = 1
         # Apply threshold while keeping 3 channels intact
-        mask = self.latest_frame > threshold  # Mask of bright pixels
-        self.latest_frame = np.where(mask, self.latest_frame, 0)  # Set dark pixels to 0
+        # mask = self.latest_frame > threshold  # Mask of bright pixels
+        # self.latest_frame = np.where(mask, self.latest_frame, 0)  # Set dark pixels to 0
         
         
         sachet_pixel_temperature = []
@@ -313,19 +297,23 @@ class Camera:
         for sachet_id, sachet in self.sachets.items():
             if sachet_id == "length":  
                 continue
+
             top, left, bottom, right = sachet["top"], sachet["left"], sachet["bottom"], sachet["right"]
             sachet_region = self.latest_frame[top:bottom, left:right]
-            valid_pixels = sachet_region[sachet_region > 0]  # Exclude dark pixels
+            valid_pixels = sachet_region[sachet_region > 0]
+            
             if valid_pixels.size > 0:
                 avg_pixel_value = np.mean(valid_pixels)
             else:
-                avg_pixel_value = 255  # If no bright pixels, default to 0
-            
+                avg_pixel_value = 0
             sachet_temp = int(self.sachets_temperature[str(sachet_id)])
             with self.data_read_lock:
                 avg_pixel_value = self.temp_ranges[sachet_id].update(avg_pixel_value)
             
+            if sachet_id == 14:
+                self.ratio = sachet_temp / avg_pixel_value
             sachet_pixel_temperature.append([sachet_id, int(avg_pixel_value), sachet_temp])
+        
         self.update_impression(self.latest_frame, sachet_pixel_temperature)
         if self.is_impression_ready():
             try:
@@ -340,7 +328,7 @@ class Camera:
         if not self.impression_cycle["active"]:
             self.reset_impression()
             
-            
+        self.frame_to_serve = self.latest_frame
         # self.iterations += 1
         # if self.iterations == 20:
 
@@ -361,7 +349,7 @@ class Camera:
                 try:
                     with self.lock:
                         self.latest_frame = self.acquire()
-                        if True or platform.system() != "Windows":
+                        if platform.system() != "Windows":
                             try:
                                 self.normalize()
                             except Exception as e:
@@ -381,32 +369,32 @@ class Camera:
                                 print('saving')
                                 self.save_target_frames()
                         
-                        # if not self.recording:
+                        if not self.recording:
                             
-                        #     self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                        #     directory = os.path.join(self.path, self.directory, "video")
-                        #     if not os.path.exists(directory):
-                        #         os.makedirs(directory, exist_ok=True)
+                            self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                            directory = os.path.join(self.path, self.directory, "video")
+                            if not os.path.exists(directory):
+                                os.makedirs(directory, exist_ok=True)
                             
-                        #     video_file = os.path.join(directory, str(instant) + ".mp4")
+                            video_file = os.path.join(directory, str(instant) + ".mp4")
                                                         
-                        #     frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-                        #     frame_height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        #     self.writer = cv2.VideoWriter(video_file, self.fourcc, 20.0, (frame_width, frame_height))
+                            frame_width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+                            frame_height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                            self.writer = cv2.VideoWriter(video_file, self.fourcc, 20.0, (frame_width, frame_height))
 
-                        #     print((frame_width, frame_height))
-                        #     self.recording = True
+                            print((frame_width, frame_height))
+                            self.recording = True
                             
-                    # else:
-                        # if  self.recording:
-                        #     try:
-                        #         print('releasing video')
-                        #         self.writer.release()
-                        #     except:
-                        #         pass
-                        #     self.recording = False
+                    else:
+                        if  self.recording:
+                            try:
+                                print('releasing video')
+                                self.writer.release()
+                            except:
+                                pass
+                            self.recording = False
                     if self.recording:
-                        self.writer.write(self.latest_frame)
+                        self.writer.write(self.frame_to_serve)
 
                     key = cv2.waitKey(1) & 0xFF
 
@@ -420,10 +408,10 @@ class Camera:
                 except Exception as e:
                     if self.completed:
                         print("completed", self.name)
-                        # break
+                        break
                     print(f'error in {self.name}: {e}')
                     self.release()
-                    sleep(1)
+                    sleep(.5)
         finally:    
             print("here")
 
@@ -510,7 +498,7 @@ if __name__ == '__main__':
     def on_camera_released(cam):
         cam.stop_display()
 
-    cameras = [Camera('pc_cam', 0)]
+    cameras = [Camera('pc_cam', 0), Camera('thermal_cam', 1)]
 
     # Start all cameras
     for cam in cameras:

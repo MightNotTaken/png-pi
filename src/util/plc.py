@@ -1,6 +1,9 @@
 from pylogix import PLC
 from tabulate import tabulate
 from time import sleep
+from .MA import MovingAverage
+import platform
+import random
 
 class PLCData:
     def __init__(self, ip, tags):
@@ -9,18 +12,36 @@ class PLCData:
         self.plc = PLC()
         self.plc.IPAddress = ip
         self.tag_values = {}
-        print(self.plc.Read("FROM_MACHINE_4C_PLC[0]"))
+        self.tag_averages = {}
+        for tag in self.tags:
+            try:
+                self.tag_averages[int(tag['key'])] = MovingAverage(20)
+            except:
+                pass
+            
+    def Write(self, tag, value):
+        self.plc.Write(tag, value)
+        
 
     def update(self):
-        try:
-            for tag in self.tags:
-                
+        for tag in self.tags:
+            try:
                 tag_name = tag["tag_name"]  # Extract tag name
-                response = self.plc.Read(tag_name)  # Read value from PLC
-                [tg, temp, status] = str(response).split(' ')
-                self.tag_values[tag["key"]] = temp  # Store the value
-        except Exception as e:
-            print('error in updating', e)
+                temp = 128 + round(random() * 5) - 5
+                if platform.system() != "Windows":
+                    response = self.plc.Read(tag_name)  # Read value from PLC
+                    response = str(response).split(' ')
+                    temp = response[1]
+                    
+                try:
+                    self.tag_values[tag["key"]] = self.tag_averages[int(tag['key'])].update(temp)
+                except:
+                    try:
+                        self.tag_values[tag["key"]] = int(temp)  # Store the value
+                    except:
+                        self.tag_values[tag["key"]] = temp == 'True'
+            except Exception as e:
+                print('error in updating', e)
         
             
     def get_tags(self):
@@ -47,11 +68,24 @@ if __name__ == "__main__":
         {"src": "heater", "key": "20", "tag_name": "FROM_MACHINE_4C_PLC[50]"},
         {"src": "main-motor", "key": "motor", "tag_name": "FROM_MACHINE_4C_PLC[64]"},
     ]
+    
+    write_tags = [
+        "ToLine4_MachinesC.DINT[0].9"
+    ]
 
 
 
     # Create PLCData instance
     plc_data = PLCData(ip, tags)
+    while True:
+        sleep(5)
+        print("writing 1 to", tag)
+        for tag in write_tags:
+            plc_data.plc.Write(tag, 1)
+        sleep(5)
+        print("writing 0 to", tag)
+        for tag in write_tags:
+            plc_data.plc.Write(tag, 0)
     while True:
         sleep(1)
         # Update values from PLC
