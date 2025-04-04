@@ -113,6 +113,7 @@ class Streamer:
         def video_feed(name, format):
             """Route to handle video feed request for a specific camera."""
             try:
+                print(self.cams)
                 if self.cams[name]:
                     return Response(self.generate_frames(name, format),
                                     mimetype='multipart/x-mixed-replace; boundary=frame')
