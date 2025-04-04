@@ -235,7 +235,7 @@ class Camera:
         if self.plc:
             self.plc.update()
             tags = self.plc.get_tags()
-            # print(tags)
+            print(tags)
         else:
             tags = {
                 '0': 128,'1': 128,'2': 128,'3': 128,'4': 128,'5': 128,'6': 128,'7': 128,'8': 128,
