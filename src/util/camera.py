@@ -21,7 +21,7 @@ BASE_PATH = None
 if platform.system() == "Windows":
     BASE_PATH = "C:\\tahir\\codes\\Gujral_Sir\\PnG\\pi\\training-data"
 else:
-    BASE_PATH = "/home/png/pro/png-pi/png-pi"
+    BASE_PATH = "/home/png/pro/png-pi"
     
 # BASE_PATH = "."
 
