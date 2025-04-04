@@ -288,6 +288,7 @@ class Camera:
         self.impression_cycle["spt"] = sachet_pixel_temperature
         if previous_mean_pixel > current_mean_pixel or not self.impression_cycle["running"]:
             self.impression_cycle["frame"] = latest_frame
+            cv2.imwrite(os.path.join(self.path, 'impression.png'), self.impression_cycle["frame"])
             self.impression_cycle["running"] = True
             for sachet_id, pixel, temperature in sachet_pixel_temperature:
                 self.calculated_temp[sachet_id] = pixel * self.ratio
