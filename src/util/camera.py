@@ -309,7 +309,7 @@ class Camera:
         
         
         sachet_pixel_temperature = []
-        
+        print(self.sachets)
         for sachet_id, sachet in self.sachets.items():
             if sachet_id == "length":  
                 continue
@@ -326,6 +326,7 @@ class Camera:
                 avg_pixel_value = self.temp_ranges[sachet_id].update(avg_pixel_value)
             
             sachet_pixel_temperature.append([sachet_id, int(avg_pixel_value), sachet_temp])
+            
         self.update_impression(self.latest_frame, sachet_pixel_temperature)
         if self.is_impression_ready():
             try:
