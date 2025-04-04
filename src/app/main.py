@@ -57,8 +57,8 @@ if platform.system() == "Windows":
     cameras = [Camera('thermal-cam', 'C:\\Users\\Tahir\\OneDrive\\Desktop\\camera\\high-temperature.mp4', None)]
     # cameras = [Camera('thermal-cam-horizontal', 'http://192.168.140.89:5000/video_feed/thermal-cam/no-format', None)]
 else:  # For Raspberry Pi (Linux)
-    # cameras = [Camera('thermal-cam', 0, plc)]
-    cameras = [HorizontalCamera('thermal-cam-horizontal', 0, plc)]
+    cameras = [Camera('thermal-cam', 0, plc)]
+    # cameras = [HorizontalCamera('thermal-cam-horizontal', 0, plc)]
 # cameras = [Camera(key, raw_videos[key]) for key in raw_videos]
 
 streamer = Streamer()
