@@ -309,7 +309,6 @@ class Camera:
         
         
         sachet_pixel_temperature = []
-        print(self.sachets)
         for sachet_id, sachet in self.sachets.items():
             if sachet_id == "length":  
                 continue
