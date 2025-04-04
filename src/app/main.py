@@ -40,8 +40,8 @@ def camera_ready(cam):
     print(cam.name, 'acquired')
     if platform.system() == "Windows":
         cam.display()
-    cam.update_reference_temperature()
     streamer.add_cam(cam)
+    cam.update_reference_temperature()
     
 plc = PLCData(plc_ip, plc_tags)
 # cameras = [Camera('thermal-cam', 0, plc)]
