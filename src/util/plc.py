@@ -27,7 +27,7 @@ class PLCData:
         for tag in self.tags:
             try:
                 tag_name = tag["tag_name"]  # Extract tag name
-                temp = 128 + round(random() * 5) - 5
+                temp = 0
                 if platform.system() != "Windows":
                     response = self.plc.Read(tag_name)  # Read value from PLC
                     response = str(response).split(' ')
